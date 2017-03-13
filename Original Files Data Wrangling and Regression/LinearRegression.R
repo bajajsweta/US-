@@ -1,7 +1,7 @@
 #Install Packages in R
 install.packages("data.table")
 install.packages("forecast")
-install.packages("leaps",repos='https://CRAN.R-project.org')
+install.packages("leaps")
 install.packages("dplyr")
 
 #Import the Libraries
