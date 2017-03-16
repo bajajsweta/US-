@@ -154,7 +154,7 @@ train_ind <- sample(seq_len(nrow(QuarterDataFeature)),size = smp_size)
 train <- QuarterDataFeature[train_ind,]
 test <- QuarterDataFeature[-train_ind,]
 
-test2 <- QuarterDataFeature2[train_ind2,]
+train2 <- QuarterDataFeature2[train_ind2,]
 
 
 # Use the lm Function to Apply Linear Regression
@@ -163,10 +163,10 @@ lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+
               LOAN_PURPOSE+PROPERTY_TYPE+FIRST_TIME_HOMEBUYER_FLAG+NUMBER_OF_UNITS, 
             data = train)
 summary(lm.fit)
-pred = predict(lm.fit, test2)
-accuracy(pred, test2$ORIGINAL_INTEREST_RATE)
+pred = predict(lm.fit, train2)
+accuracy(pred, train2$ORIGINAL_INTEREST_RATE)
 
-print(accuracy(pred, test2$ORIGINAL_INTEREST_RATE))
+print(accuracy(pred, train2$ORIGINAL_INTEREST_RATE))
 
 
 
