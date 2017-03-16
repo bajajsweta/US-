@@ -17,7 +17,9 @@ print("Loading Data for Quarter2005")
 
 #Read the File from the Current Directory
 QuarterData <- fread("Quarter2005.csv", sep = ',')
+QuarterData2 <- fread("Sample_Original_Validated_ata1_Q12014.csv.csv", sep = ',')
 print (head(QuarterData))
+print (head(QuarterData2))
 
 
 #Writen to Accept the System Args from the Console
@@ -30,6 +32,13 @@ n <- as.numeric(args[1])
 QuarterDataFeature <- QuarterData
 QuarterDataFeature <- QuarterDataFeature %>% mutate_if(is.character,as.factor)
 QuarterDataFeature <- within(QuarterDataFeature, rm("SELLER_NAME","SUPER_CONFORMING_FLAG",
+                                                    "POSTAL_CODE","MSA","LOAN_SEQUENCE_NUMBER",
+                                                    "SERVICER_NAME","PRODUCT_TYPE","FIRST_PAYMENT_DATE",
+                                                    "MATURITY_DATE", "NUMBER_OF_BORROWERS"))
+
+QuarterDataFeature2 <- QuarterData2
+QuarterDataFeature2 <- QuarterDataFeature2 %>% mutate_if(is.character,as.factor)
+QuarterDataFeature2 <- within(QuarterDataFeature2, rm("SELLER_NAME","SUPER_CONFORMING_FLAG",
                                                     "POSTAL_CODE","MSA","LOAN_SEQUENCE_NUMBER",
                                                     "SERVICER_NAME","PRODUCT_TYPE","FIRST_PAYMENT_DATE",
                                                     "MATURITY_DATE", "NUMBER_OF_BORROWERS"))
@@ -48,17 +57,35 @@ QuarterDataFeature$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV <- normalized(QuarterDat
 QuarterDataFeature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO <- normalized(QuarterDataFeature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO)
 QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV)
 
+QuarterDataFeature2$CREDIT_SCORE <- normalized(QuarterDataFeature2$CREDIT_SCORE)  
+QuarterDataFeature2$ORIGINAL_UPB <- normalized(QuarterDataFeature2$ORIGINAL_UPB)
+QuarterDataFeature2$ORIGINAL_LOAN_TERM <- normalized(QuarterDataFeature2$ORIGINAL_LOAN_TERM)
+QuarterDataFeature2$MORTGAGE_INSURANCE_PERCENTAGE_MI <- normalized(QuarterDataFeature2$MORTGAGE_INSURANCE_PERCENTAGE_MI)
+QuarterDataFeature2$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV <- normalized(QuarterDataFeature2$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV)
+QuarterDataFeature2$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO <- normalized(QuarterDataFeature2$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO)
+QuarterDataFeature2$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterDataFeature2$ORIGINAL_LOAN_TO_VALUE_LTV)
+
 #Convert All the Factors to Numerics
 QuarterDataFeature$PROPERTY_STATE <- as.numeric(QuarterDataFeature$PROPERTY_STATE)
 QuarterDataFeature$LOAN_PURPOSE <- as.numeric(QuarterDataFeature$LOAN_PURPOSE)
 QuarterDataFeature$PROPERTY_TYPE <- as.numeric(QuarterDataFeature$PROPERTY_TYPE)
 QuarterDataFeature$FIRST_TIME_HOMEBUYER_FLAG <- as.numeric(QuarterDataFeature$FIRST_TIME_HOMEBUYER_FLAG)
 
+QuarterDataFeature2$PROPERTY_STATE <- as.numeric(QuarterDataFeature2$PROPERTY_STATE)
+QuarterDataFeature2$LOAN_PURPOSE <- as.numeric(QuarterDataFeature2$LOAN_PURPOSE)
+QuarterDataFeature2$PROPERTY_TYPE <- as.numeric(QuarterDataFeature2$PROPERTY_TYPE)
+QuarterDataFeature2$FIRST_TIME_HOMEBUYER_FLAG <- as.numeric(QuarterDataFeature2$FIRST_TIME_HOMEBUYER_FLAG)
+
 #Normalize all the Numerics
 QuarterDataFeature$PROPERTY_STATE <- normalized(QuarterDataFeature$PROPERTY_STATE)
 QuarterDataFeature$LOAN_PURPOSE <- normalized(QuarterDataFeature$LOAN_PURPOSE)
 QuarterDataFeature$PROPERTY_TYPE <- normalized(QuarterDataFeature$PROPERTY_TYPE)
 QuarterDataFeature$FIRST_TIME_HOMEBUYER_FLAG <- normalized(QuarterDataFeature$FIRST_TIME_HOMEBUYER_FLAG)
+
+QuarterDataFeature2$PROPERTY_STATE <- normalized(QuarterDataFeature2$PROPERTY_STATE)
+QuarterDataFeature2$LOAN_PURPOSE <- normalized(QuarterDataFeature2$LOAN_PURPOSE)
+QuarterDataFeature2$PROPERTY_TYPE <- normalized(QuarterDataFeature2$PROPERTY_TYPE)
+QuarterDataFeature2$FIRST_TIME_HOMEBUYER_FLAG <- normalized(QuarterDataFeature2$FIRST_TIME_HOMEBUYER_FLAG)
 
 # VARIABLE SELECTION
 # Four algorithms exhaustive search, forward, backward selection, stepwise regression are explored here
@@ -117,9 +144,18 @@ smp_size <- floor(0.75 * nrow(QuarterDataFeature))
 set.seed(140)
 train_ind <- sample(seq_len(nrow(QuarterDataFeature)),size = smp_size)
 
+ smp_size2 <- floor(nrow(QuarterDataFeature2))
+                                                  
+ set.seed(140)
+ train_ind2 <- sample(seq_len(nrow(QuarterDataFeature2)),size = smp_size)
+                                                  
+
 #Divide into Training and Testing Data
 train <- QuarterDataFeature[train_ind,]
 test <- QuarterDataFeature[-train_ind,]
+
+test2 <- QuarterDataFeature2[train_ind2,]
+
 
 # Use the lm Function to Apply Linear Regression
 lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+MORTGAGE_INSURANCE_PERCENTAGE_MI+
@@ -127,10 +163,10 @@ lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+
               LOAN_PURPOSE+PROPERTY_TYPE+FIRST_TIME_HOMEBUYER_FLAG+NUMBER_OF_UNITS, 
             data = train)
 summary(lm.fit)
-pred = predict(lm.fit, test)
-accuracy(pred, train$ORIGINAL_INTEREST_RATE)
+pred = predict(lm.fit, test2)
+accuracy(pred, test2$ORIGINAL_INTEREST_RATE)
 
-print(accuracy(pred, train$ORIGINAL_INTEREST_RATE))
+print(accuracy(pred, test2$ORIGINAL_INTEREST_RATE))
 
 
 
