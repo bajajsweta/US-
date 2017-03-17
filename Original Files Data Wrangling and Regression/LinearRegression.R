@@ -1,6 +1,6 @@
 #Install Packages in R
 install.packages("data.table")
-#install.packages("forecast")
+install.packages("forecast")
 install.packages("leaps",repos='https://CRAN.R-project.org')
 install.packages("dplyr")
 
@@ -9,7 +9,7 @@ getwd()
 
 #Import the Libraries
 library(data.table)
-#library(forecast)
+library(forecast)
 library(leaps)
 library(dplyr)
 
@@ -22,10 +22,10 @@ n <- as.numeric(args[1])
 m <- as.numeric(args[2])
 
 #Read the File from the Current Directory
-QuarterData <- fread("Quarter2005.csv", sep = ',')
+QuarterData <- fread("Q11999.csv", sep = ',')
 print (head(QuarterData))
 
-Quarter2Data <- fread("Quarter2006.csv", sep = ',')
+Quarter2Data <- fread("Q21999.csv", sep = ',')
 print (head(Quarter2Data))
 
 
@@ -40,7 +40,7 @@ QuarterDataFeature <- within(QuarterDataFeature, rm("SELLER_NAME","SUPER_CONFORM
 
 #create a separate dataframe
 QuarterData2Feature <- Quarter2Data
-QuarterData2Feature <- Quarter2DataFeature %>% mutate_if(is.character,as.factor)
+QuarterData2Feature <- QuarterData2Feature %>% mutate_if(is.character,as.factor)
 QuarterData2Feature <- within(QuarterData2Feature, rm("SELLER_NAME","SUPER_CONFORMING_FLAG",
                                                       "POSTAL_CODE","MSA","LOAN_SEQUENCE_NUMBER",
                                                       "SERVICER_NAME","PRODUCT_TYPE","FIRST_PAYMENT_DATE",
@@ -160,8 +160,13 @@ train <- QuarterDataFeature
 test <- QuarterData2Feature
 
 # Use the lm Function to Apply Linear Regression
-lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+MORTGAGE_INSURANCE_PERCENTAGE_MI+
-              ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV+ORIGINAL_DEBT_TO_INCOME_DTI_RATIO+PROPERTY_STATE+ORIGINAL_LOAN_TO_VALUE_LTV+
+#lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+MORTGAGE_INSURANCE_PERCENTAGE_MI+
+#              ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV+ORIGINAL_DEBT_TO_INCOME_DTI_RATIO+PROPERTY_STATE+ORIGINAL_LOAN_TO_VALUE_LTV+
+#             LOAN_PURPOSE+PROPERTY_TYPE+FIRST_TIME_HOMEBUYER_FLAG+NUMBER_OF_UNITS, 
+#          data = train)
+
+lm.fit = lm(ORIGINAL_INTEREST_RATE~CREDIT_SCORE+ORIGINAL_UPB+ORIGINAL_LOAN_TERM+
+              ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV+ORIGINAL_DEBT_TO_INCOME_DTI_RATIO+PROPERTY_STATE+
               LOAN_PURPOSE+PROPERTY_TYPE+FIRST_TIME_HOMEBUYER_FLAG+NUMBER_OF_UNITS, 
             data = train)
 summary(lm.fit)

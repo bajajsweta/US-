@@ -27,10 +27,10 @@ n <- as.numeric(args[1])
 m <- as.numeric(args[2])
 
 #Read the File from the Current Directory
-QuarterData <- fread("Quarter2005.csv", sep = ',')
+QuarterData <- fread("Q11999.csv", sep = ',')
 print (head(QuarterData))
 
-Quarter2Data <- fread("Quarter2006.csv", sep = ',')
+Quarter2Data <- fread("Q11999.csv", sep = ',')
 print (head(Quarter2Data))
 
 
@@ -43,17 +43,20 @@ QuarterDataFeature <- within(QuarterDataFeature, rm("SELLER_NAME","SUPER_CONFORM
                                                     "POSTAL_CODE","MSA","LOAN_SEQUENCE_NUMBER",
                                                     "SERVICER_NAME","PRODUCT_TYPE","FIRST_PAYMENT_DATE",
                                                     "MATURITY_DATE", "NUMBER_OF_BORROWERS","PREPAYMENT_PENALTY_MORTGAGE_PPM_FLAG",
-                                                     "CHANNEL"))
+                                                     "CHANNEL","QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV",
+                                                    "MORTGAGE_INSURANCE_PERCENTAGE_MI"))
 
 
+summary(QuarterDataFeature)
 #create a separate dataframe
 QuarterData2Feature <- Quarter2Data
-QuarterData2Feature <- Quarter2DataFeature %>% mutate_if(is.character,as.factor)
+QuarterData2Feature <- QuarterData2Feature %>% mutate_if(is.character,as.factor)
 QuarterData2Feature <- within(QuarterData2Feature, rm("SELLER_NAME","SUPER_CONFORMING_FLAG",
                                                     "POSTAL_CODE","MSA","LOAN_SEQUENCE_NUMBER",
                                                     "SERVICER_NAME","PRODUCT_TYPE","FIRST_PAYMENT_DATE",
                                                     "MATURITY_DATE", "NUMBER_OF_BORROWERS","PREPAYMENT_PENALTY_MORTGAGE_PPM_FLAG",
-                                                    "CHANNEL"))
+                                                    "CHANNEL","QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV",
+                                                    "MORTGAGE_INSURANCE_PERCENTAGE_MI"))
 
 
 
@@ -66,10 +69,10 @@ normalized <-  function(x) {
 QuarterDataFeature$CREDIT_SCORE <- normalized(QuarterDataFeature$CREDIT_SCORE)  
 QuarterDataFeature$ORIGINAL_UPB <- normalized(QuarterDataFeature$ORIGINAL_UPB)
 QuarterDataFeature$ORIGINAL_LOAN_TERM <- normalized(QuarterDataFeature$ORIGINAL_LOAN_TERM)
-QuarterDataFeature$MORTGAGE_INSURANCE_PERCENTAGE_MI <- normalized(QuarterDataFeature$MORTGAGE_INSURANCE_PERCENTAGE_MI)
+#QuarterDataFeature$MORTGAGE_INSURANCE_PERCENTAGE_MI <- normalized(QuarterDataFeature$MORTGAGE_INSURANCE_PERCENTAGE_MI)
 QuarterDataFeature$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV <- normalized(QuarterDataFeature$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV)
 QuarterDataFeature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO <- normalized(QuarterDataFeature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO)
-QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV)
+#QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterDataFeature$ORIGINAL_LOAN_TO_VALUE_LTV)
 
 #Convert All the Factors to Numerics
 QuarterDataFeature$PROPERTY_STATE <- as.numeric(QuarterDataFeature$PROPERTY_STATE)
@@ -88,10 +91,10 @@ QuarterDataFeature$FIRST_TIME_HOMEBUYER_FLAG <- normalized(QuarterDataFeature$FI
 QuarterData2Feature$CREDIT_SCORE <- normalized(QuarterData2Feature$CREDIT_SCORE)  
 QuarterData2Feature$ORIGINAL_UPB <- normalized(QuarterData2Feature$ORIGINAL_UPB)
 QuarterData2Feature$ORIGINAL_LOAN_TERM <- normalized(QuarterData2Feature$ORIGINAL_LOAN_TERM)
-QuarterData2Feature$MORTGAGE_INSURANCE_PERCENTAGE_MI <- normalized(QuarterData2Feature$MORTGAGE_INSURANCE_PERCENTAGE_MI)
+#QuarterData2Feature$MORTGAGE_INSURANCE_PERCENTAGE_MI <- normalized(QuarterData2Feature$MORTGAGE_INSURANCE_PERCENTAGE_MI)
 QuarterData2Feature$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV <- normalized(QuarterData2Feature$ORIGINAL_COMBINED_LOAN_TO_VALUE_CLTV)
 QuarterData2Feature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO <- normalized(QuarterData2Feature$ORIGINAL_DEBT_TO_INCOME_DTI_RATIO)
-QuarterData2Feature$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterData2Feature$ORIGINAL_LOAN_TO_VALUE_LTV)
+#QuarterData2Feature$ORIGINAL_LOAN_TO_VALUE_LTV <- normalized(QuarterData2Feature$ORIGINAL_LOAN_TO_VALUE_LTV)
 
 #Convert All the Factors to Numerics
 QuarterData2Feature$PROPERTY_STATE <- as.numeric(QuarterData2Feature$PROPERTY_STATE)
@@ -119,15 +122,23 @@ QuarterData2Feature$FIRST_TIME_HOMEBUYER_FLAG <- normalized(QuarterData2Feature$
 train <- QuarterDataFeature
 test <- QuarterData2Feature
 
+summary(train)
+
 KNN_reg <- knn.reg(train= train, test=test, y=train$ORIGINAL_INTEREST_RATE, k=3,algorithm = c("brute") )
 
 preds = as.data.frame(KNN_reg$pred)
 
-summary(KNN_reg)
+print (summary(KNN_reg))
+
+saveRDS(KNN_reg, "KNN_reg.rds")
+my_model <- readRDS("KNN_reg.rds")
 
 preds
 
 accuracy(preds, train$ORIGINAL_INTEREST_RATE)
 
 
-plot(preds)
+plot(train$ORIGINAL_INTEREST_RATE, preds, xlab="y", ylab=expression(hat(y)))
+
+
+
