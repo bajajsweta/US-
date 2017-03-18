@@ -26,8 +26,8 @@ print("Loading Data for Quarter2005")
 
 #Writen to Accept the System Args from the Console
 args <- commandArgs(trailingOnly = TRUE)
-n <- as.numeric(args[1])
-m <- as.numeric(args[2])
+n <- args[1]
+m <- args[2]
 
 #Read the File from the Current Directory
 QuarterData <- fread(n, sep = ',')
