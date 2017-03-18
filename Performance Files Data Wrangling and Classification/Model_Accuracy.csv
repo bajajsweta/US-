@@ -1,5 +1,0 @@
-Model,Accuracy Rate,Precision
-Logistic Regression,0.9589099,0.98
-Random Forest,0.9532015,0.996
-Neural Network,0.9533329,0.998
-SVM,0.9124223,0.97
