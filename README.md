@@ -11,3 +11,9 @@ For Validating Sample Performance Files - docker pull sweta/sampperf
 For Validatind History Original Quarter Files and running the regression Files - docker pull sweta/regressionmodel
 
 For Validating History Performance Quarter Files and running the Classification models - docker pull sweta/classificationmodel
+
+After pulling the image 
+
+You have run the image by using 
+
+docker run command and then execute the container to run the Rscripts and the Python Scripts
