@@ -13,7 +13,7 @@ library(leaps)
 library(dplyr)
 library(neuralnet)
 
-QuarterData <- fread("Quarter2005.csv", sep = ',')
+QuarterData <- fread("Sample_Original_Validated_ata1_Q11999.csv", sep = ',')
 
 QuarterDataFeature <- QuarterData
 QuarterDataFeature <- QuarterDataFeature %>% mutate_if(is.character,as.factor)

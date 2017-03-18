@@ -18,14 +18,14 @@ print("Loading Data for Quarter2005")
 
 #Writen to Accept the System Args from the Console
 args <- commandArgs(trailingOnly = TRUE)
-n <- as.numeric(args[1])
-m <- as.numeric(args[2])
+#n <- as.numeric(args[1])
+#m <- as.numeric(args[2])
 
 #Read the File from the Current Directory
-QuarterData <- fread("Q11999.csv", sep = ',')
+QuarterData <- fread("Sample_Original_Validated_ata1_Q11999.csv", sep = ',')
 print (head(QuarterData))
 
-Quarter2Data <- fread("Q21999.csv", sep = ',')
+Quarter2Data <- fread("Sample_Original_Validated_ata1_Q21999.csv", sep = ',')
 print (head(Quarter2Data))
 
 
